@@ -1,6 +1,6 @@
 # Contributing to Robo-Knight-Inventory
 
-This repository defines the **canonical Robo-Knight v1.00 registration**:
+This repository defines the canonical Robo-Knight v1.00 registration:
 armor geometry, stance law, crest placement, and shine behavior.
 
 ## Development Guidelines
