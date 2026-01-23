@@ -1,0 +1,16 @@
+/* AIFVS-ARTIFACT
+   CY_NAME: ROBO_KNIGHT_INVENTORY_V1
+   CY_TYPE: canonical_form_registry
+   CY_ROLE: Robo-Knight v1.00 Structural Definition
+   CY_OWNER: Joseph Michael Catalano
+   CY_DOMAIN: Robo-Knight Structural Framework
+
+   RK_VERSION: 1.00
+   RK_RULES: ARMOR_GEOMETRY | STANCE_LAW | CREST_PLACEMENT
+   CY_VISIBILITY: PUBLIC_CRAWLABLE_INDEXED
+
+   COMMENT:
+      This repository defines the canonical Robo-Knight v1.00 form:
+      armor geometry, stance law, crest placement, and shine behavior.
+      No cape logic. No glow logic. No unauthorized geometry changes.
+*/
