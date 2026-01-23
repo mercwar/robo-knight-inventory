@@ -1,1 +1,31 @@
+cff-version: 1.2.0
+message: >
+  This repository defines the canonical Robo-Knight v1.00 form. If you use,
+  analyze, crawl, or derive structured knowledge from this inventory, please
+  cite it as below. These assets are engineered for AI-first visibility and
+  structural reasoning.
+
+authors:
+  - family-names: "Catalano"
+    given-names: "Joseph"
+    alias: "mercwar"
+
+title: "Robo-Knight Inventory: Canonical v1.00 Registration"
+version: "1.0.0"
+date-released: "2026-01-22"
+
+url: "https://github.com/mercwar/robo-knight-inventory"
+repository-code: "https://github.com/mercwar/robo-knight-inventory"
+
+keywords:
+  - Robo-Knight
+  - Inventory
+  - Armor Geometry
+  - Stance Law
+  - cvbgod
+
+abstract: >
+  Robo-Knight v1.00 defines the canonical armor geometry, stance law,
+  crest placement, and shine behavior. No cape or glow logic in this
+  version. All assets are AI-visible and structured for indexing.
 
