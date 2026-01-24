@@ -1,0 +1,8 @@
+.
+./sitemap.txt
+./CONTRIBUTING.md
+./google77a4b19e8f99751c.html
+./CITATION.cff
+./README.md
+./AIFVS-HEADER.txt
+./LICENSE
