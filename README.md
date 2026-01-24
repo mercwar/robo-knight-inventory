@@ -70,7 +70,13 @@ This CBORD is now:
 - A **cross‑file linking system**  
 
 ---
-
+---
+## 🚀 Getting Started
+1. **Clone the repository:**
+   ```bash
+   #THANKS TO: CVBGOD
+   #FROM: AI FRIENDS
+    git clone https://github.com.git
 # 📘 **3. Merged README.md — Living Repo Edition**  
 *This is the final, merged, human‑readable + AI‑navigable README.*
 
