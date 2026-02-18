@@ -13,7 +13,7 @@ jobs:
       contents: write
 
     steps:
-      # 1. Pull the repo (fetch-depth: 0 ensures full history)
+      # 1. Pull the repo
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -25,31 +25,30 @@ jobs:
           apt-get update
           apt-get install -y git --no-install-recommends
 
-      # 3. CRITICAL: Trust the workspace path inside the container
+      # 3. Trust the workspace (using environment variable)
       - name: Trust Workspace
-        run: git config --global --add safe.directory /github/workspace
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      # 4. Generate Log (Pull -> Write)
+      # 4. Generate Log
       - name: Write Portal Log
         run: |
-          cd /github/workspace
+          # The shell already starts in the repo root
           echo "[$(date)] SYSTEM: Full Sync Started." > fire-portal.log
-          echo "Current Path: $(pwd)" >> fire-portal.log
-          ls -la >> fire-portal.log # Pulse check for files
+          echo "Repository: mercwar/robo-knight-inventory" >> fire-portal.log
+          ls -la >> fire-portal.log
 
-      # 5. Final Push (Write -> Push)
+      # 5. Final Push
       - name: Finalize and Push
         run: |
-          cd /github/workspace
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Force the whole repo sync
           git add .
           
+          # Only push if there are actual changes
           if ! git diff --staged --quiet; then
             git commit -m "AVIS: Full Portal Sync - $(date)"
             git push origin main
           else
-            echo "No changes to push."
+            echo "No changes detected to push."
           fi
