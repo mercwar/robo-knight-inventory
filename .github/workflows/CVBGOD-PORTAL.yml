@@ -16,7 +16,7 @@ jobs:
 
       - name: Create Directory and File
         run: |
-          echo "CVBGOD MADE THE DIRECTORY THIS TIME FOR YOU ROBOTS" >ROBOT.CVBGOD
+          echo "CVBGOD MADE THE DIRECTORY THIS TIME FOR YOU ROBOTS THIS IS THE SECOND TEST" >ROBOT.CVBGOD
 
       - name: Commit and Push Changes
         run: | 
