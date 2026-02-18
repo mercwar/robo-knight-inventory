@@ -1,0 +1,8 @@
+{
+  "project": "FIRE-GEM",
+  "targets": [
+    { "file": "fire-log.asm", "action": "compile_and_run" },
+    { "file": "fire.cjs.asm", "action": "compile_and_run" },
+    { "file": "fire-end.asm", "action": "compile_and_run" }
+  ]
+}
