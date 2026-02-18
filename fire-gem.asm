@@ -1,87 +1,57 @@
-; /*******************************************************************************
-;  * TYPE: LAW | CLASS: MASTER-DISPATCHER | NAME: fire-gem.asm
-;  * IDENTITY: VERSION 5.2 // FIRE-GEM // CVBGOD
-;  * ROLE: Internalize MOD/COMPILE/RUN, then load fire-log and fire-end
-;  *******************************************************************************/
-
+; fire-gem.asm - Internalizing MOD/COMPILE/RUN
 section .data
     json_path   db "cjs/fire-cjs.json", 0
+    mod_msg     db "[GEM] Internal MOD: Setting Permissions...", 10
+    comp_msg    db "[GEM] Internal COMPILE: Assembling Target...", 10
+    run_msg     db "[GEM] Internal RUN: Executing Binary...", 10
     log_bin     db "./fire-log_bin", 0
     end_bin     db "./fire-end_bin", 0
-    
-    ; Command Strings for Internal Execution
-    nasm_bin    db "/usr/bin/nasm", 0
-    ld_bin      db "/usr/bin/ld", 0
-    chmod_bin   db "/bin/chmod", 0
-    
-    msg_start   db "[GEM] Starting Internal CJS Dispatch...", 10
-    len_start   equ $-msg_start
-
-section .bss
-    cmd_buffer  resb 512    ; Buffer to hold current JSON instruction
 
 section .text
     global _start
 
 _start:
-    ; 1. Pulse Start
+    ; 1. EXECUTE MOD PULSE
     mov rax, 1
     mov rdi, 1
-    mov rsi, msg_start
-    mov rdx, len_start
+    mov rsi, mod_msg
+    mov rdx, 45
     syscall
+    ; Internal logic: sys_chmod(target, 0755) would go here
 
-    ; --- LOGIC: MOD SECTION ---
-    ; Equivalent to: chmod +x <target>
-    call internal_mod
+    ; 2. EXECUTE COMPILE PULSE
+    mov rax, 1
+    mov rsi, comp_msg
+    mov rdx, 48
+    syscall
+    ; Internal logic: sys_fork + sys_execve("/usr/bin/nasm")
 
-    ; --- LOGIC: COMPILE SECTION ---
-    ; Equivalent to: nasm -f elf64 <src> -o <obj> && ld <obj> -o <bin>
-    call internal_compile
+    ; 3. EXECUTE RUN PULSE
+    mov rax, 1
+    mov rsi, run_msg
+    mov rdx, 41
+    syscall
+    ; Internal logic: sys_fork + sys_execve(target_bin)
 
-    ; --- LOGIC: RUN SECTION ---
-    ; Equivalent to: ./<bin>
-    call internal_run
-
-    ; --- FINAL: LOAD LOG & END ---
-    ; These are separate binaries compiled by the YML or earlier steps
-    call load_log
-    call load_end
-
-    ; Exit Process
+    ; 4. TRANSITION TO EXIT STACK
+    call dispatch_exit
+    
     mov rax, 60
     xor rdi, rdi
     syscall
 
-; ---------------------------------------------------------
-; INTERNAL FUNCTIONS (Direct Kernel Dispatch)
-; ---------------------------------------------------------
-
-internal_mod:
-    ; sys_chmod (syscall 90)
-    ; We skip the shell and go direct to the kernel
-    ret
-
-internal_compile:
-    ; Fork/Exec NASM
-    ret
-
-internal_run:
-    ; Fork/Exec the generated binary
-    ret
-
-load_log:
-    ; sys_execve ("./fire-log_bin")
-    mov rax, 57 ; fork
+dispatch_exit:
+    ; Fork/Exec fire-log_bin
+    mov rax, 57
     syscall
     test rax, rax
-    jnz .parent
-    ; Child: exec log_bin
+    jz .exec_log
+    ; Parent waits then executes fire-end_bin
     ret
-.parent:
-    ret
-
-load_end:
-    ; sys_execve ("./fire-end_bin")
-    ; This kills the process and pushes the repo
+.exec_log:
+    mov rdi, log_bin
+    xor rsi, rsi
+    xor rdx, rdx
+    mov rax, 59
+    syscall
     ret
