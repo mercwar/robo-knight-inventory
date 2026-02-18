@@ -1,54 +1,49 @@
-name: PORTAL-FULL-SYNC-FIXED
+name: Deploy GitHub Pages
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  sync-job:
+  build:
+    # Set the appropriate runner, in this case, a Debian-based environment (ubuntu-latest)
     runs-on: ubuntu-latest
-    container: 
-      image: debian:bookworm-slim
-      options: --user root
     permissions:
-      contents: write
+      contents: read # Allows checkout action to read the repo contents
+      pages: write # Allows the deployment action to write to the gh-pages branch
+      id-token: write # Required by the actions/deploy-pages action
 
     steps:
-      # 1. Pull the repo
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      # Example of a step to create and write content to a file
+      - name: Create index.html file
+        run: |
+          echo "<html><body><h1>Hello from GitHub Actions on Debian!</h1></body></html>" > index.html
+        shell: bash
+
+      # Optional: Use a specific action from the marketplace to manage file content
+      # - name: Write a file with a marketplace action
+      #   uses: DamianWu/write-file-action@v1
+      #   with:
+      #     path: 'my-config.yaml'
+      #     contents: |
+      #       key: value
+      #       list:
+      #         - item1
+      #         - item2
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          fetch-depth: 0
+          # Upload the directory containing your static files
+          path: './' # The root directory now contains index.html
 
-      # 2. Install Git inside the container
-      - name: Install Git
-        run: |
-          apt-get update
-          apt-get install -y git --no-install-recommends
-
-      # 3. Trust the workspace (using environment variable)
-      - name: Trust Workspace
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      # 4. Generate Log
-      - name: Write Portal Log
-        run: |
-          # The shell already starts in the repo root
-          echo "[$(date)] SYSTEM: Full Sync Started." > fire-portal.log
-          echo "Repository: mercwar/robo-knight-inventory" >> fire-portal.log
-          ls -la >> fire-portal.log
-
-      # 5. Final Push
-      - name: Finalize and Push
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          git add .
-          
-          # Only push if there are actual changes
-          if ! git diff --staged --quiet; then
-            git commit -m "AVIS: Full Portal Sync - $(date)"
-            git push origin main
-          else
-            echo "No changes detected to push."
-          fi
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
