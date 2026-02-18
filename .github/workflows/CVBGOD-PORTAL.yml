@@ -15,8 +15,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create Directory and File
-        run: |
+        run: |  # MK Required FOR SUB ROOT
           echo "CVBGOD MADE THE DIRECTORY THIS TIME FOR YOU ROBOTS THIS IS THE SECOND TEST" >ROBOT.CVBGOD
+
+      - name: # GEMINI NOW READ THE CREATED FILE HERE THEN ECHO A THIRD TEST TO FILE CVBGOD.AVIS
+        run: |  # MK Required FOR SUB ROOT
+          echo "CVBGOD MADE THE DIRECTORY THIS TIME FOR YOU ROBOTS THIS IS THE SECOND TEST" >ROBOT.CVBGOD
+
 
       - name: Commit and Push Changes
         run: | 
