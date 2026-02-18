@@ -1,4 +1,4 @@
-name: FIRE-CYHY-MERC-G-PORTAL-EXPANDED
+name: FIRE-CYHY-MERC-G-PORTAL-FAST
 
 on:
   workflow_dispatch:
@@ -8,34 +8,30 @@ on:
 jobs:
   portal-orchestration:
     runs-on: ubuntu-latest
-    container: debian:bookworm
+    container: debian:bookworm-slim # Slim version for speed
     permissions:
       contents: write
 
     steps:
-      - name: Checkout & Pulse Init
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Hardcode Portal State
+      - name: Initialize fire-portal.log
         run: |
-          touch fire-portal.log
-          echo "[$(date)] SYSTEM: Debian Core Booted. Registry Locked." >> fire-portal.log
+          echo "[$(date)] SYSTEM: Repo Pulled. Fast-Boot Active." > fire-portal.log
 
-      - name: Kernel & AI Dependency Lock
+      - name: Install Essential Toolchain Only
         run: |
           apt-get update && apt-get install -y \
-            nasm gcc g++ binutils jq git curl \
-            python3 python3-pip python3-torch \
-            linux-headers-amd64
-          python3 -m pip install tensorflow opencv-python --break-system-packages
+            nasm binutils gcc git jq python3 python3-pip --no-install-recommends
+          python3 -m pip install torch tensorflow opencv-python --break-system-packages --no-cache-dir
 
-      - name: Multi-Phase ASM Compilation
+      - name: Compile and Run Master Dispatcher
         run: |
-          echo "[$(date)] JOB: Compiling Portal Suite..." >> fire-portal.log
-          # Compile the Logger and Finalizer first so they are available to Gem
+          echo "[$(date)] JOB: Compiling Master Suite" >> fire-portal.log
+          # Pre-compile the external tools
           nasm -f elf64 fire-log.asm -o fire-log.o && ld fire-log.o -o fire-log_bin
           nasm -f elf64 fire-end.asm -o fire-end.o && ld fire-end.o -o fire-end_bin
-          # Compile the Master Dispatcher
+          # Compile and execute the Brain
           nasm -f elf64 fire-gem.asm -o fire-gem.o && ld fire-gem.o -o fire-gem_bin
-          echo "[$(date)] JOB: Binaries Linked. Launching Gem Dispatcher." >> fire-portal.log
           ./fire-gem_bin >> fire-portal.log 2>&1
