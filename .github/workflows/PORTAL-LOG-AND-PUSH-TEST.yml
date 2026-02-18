@@ -1,52 +1,57 @@
-name: PORTAL-LOG-AND-PUSH-FINAL
+name: PORTAL-FULL-SYNC-TEST
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
-  portal-test-job:
+  sync-job:
     runs-on: ubuntu-latest
     container: 
       image: debian:bookworm-slim
-      options: --user root
+      options: --user root # Ensures we can write to the workspace
     permissions:
       contents: write
 
     steps:
-      # 1. Pull the Repository
-      - name: Checkout Repository
+      # 1️⃣ Pull the whole repo (fetch-depth: 0 ensures full history)
+      - name: Pull Full Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. INSTALL TOOLS FIRST (Fixes the "git: not found" error)
-      - name: Install Git and Dependencies
+      # 2️⃣ Install Tools immediately
+      - name: Install Git
         run: |
           apt-get update
-          apt-get install -y git jq --no-install-recommends
+          apt-get install -y git --no-install-recommends
 
-      # 3. Fix Dubious Ownership
-      - name: Git Safe Directory
+      # 3️⃣ Configure Environment
+      - name: Set Safe Directory
         run: git config --global --add safe.directory /github/workspace
 
-      # 4. Forced Logging
+      # 4️⃣ Write the Log File
       - name: Write Portal Log
         run: |
-          echo "[$(date)] TEST_PULSE: Initializing Log Logic..." > fire-portal.log
-          echo "[$(date)] TEST_PULSE: Debian Core Writing to fire-portal.log" >> fire-portal.log
+          echo "[$(date)] SYSTEM: Full Sync Initiated." > fire-portal.log
+          echo "[$(date)] SYSTEM: Debian Core Active." >> fire-portal.log
+          echo "[$(date)] JOB: Captured Full Repository State." >> fire-portal.log
           
-          if [ -s fire-portal.log ]; then
-            echo "SUCCESS: fire-portal.log created."
-          else
-            echo "ERROR: File creation failed." && exit 1
-          fi
+          # Verification pulse
+          ls -R >> fire-portal.log
 
-      # 5. Final Push at the End of the File
-      - name: Finalize and Push
+      # 5️⃣ Push the whole repo at the end of the file
+      - name: Finalize and Push Whole Repo
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          git add fire-portal.log
-          git commit -m "AVIS: Portal Test Pulse - Log and Push Complete"
-          git push origin main
+          # Add EVERYTHING (.) to the push
+          git add .
+          
+          # Only commit and push if there are changes
+          if ! git diff --staged --quiet; then
+            git commit -m "AVIS: Full Portal Sync - $(date)"
+            git push origin main
+          else
+            echo "No changes detected to push."
+          fi
