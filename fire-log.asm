@@ -1,53 +1,39 @@
-; fire-log.asm - Multi-File Pulse Sync
+; fire-log.asm - Multi-Target Append
 section .data
-    target1 db "fire-portal.log", 0
-    target2 db "avis-beacon.json", 0
-    target3 db "cjs/geo-audit.log", 0
-    pulse   db "[PULSE] Multi-Target Log Sync Complete", 10
+    t1      db "fire-portal.log", 0
+    t2      db "avis-beacon.json", 0
+    msg     db '{"pulse": "DISPATCH_COMPLETE", "geo": "LOCKED"}', 10
+    len_m   equ $-msg
 
 section .text
     global _start
 
 _start:
-    ; Iterate through targets 1-3
-    mov r15, 1
-.loop:
-    cmp r15, 1
-    je .t1
-    cmp r15, 2
-    je .t2
-    cmp r15, 3
-    je .t3
-    jmp .done
+    ; Target 1: Portal Log
+    lea rdi, [rel t1]
+    call append_to_file
 
-.t1: lea rdi, [rel target1]
-     jmp .write
-.t2: lea rdi, [rel target2]
-     jmp .write
-.t3: lea rdi, [rel target3]
-     jmp .write
+    ; Target 2: Beacon Status
+    lea rdi, [rel t2]
+    call append_to_file
 
-.write:
-    mov rax, 2          ; sys_open
-    mov rsi, 02101o     ; O_WRONLY | O_APPEND | O_CREAT
-    mov rdx, 0644o
-    syscall
-    mov rbx, rax        ; save fd
-    
-    mov rax, 1          ; sys_write
-    mov rdi, rbx
-    mov rsi, pulse
-    mov rdx, 41
-    syscall
-    
-    mov rax, 3          ; sys_close
-    mov rdi, rbx
-    syscall
-    
-    inc r15
-    jmp .loop
-
-.done:
     mov rax, 60
     xor rdi, rdi
     syscall
+
+append_to_file:
+    ; sys_open (O_WRONLY|O_APPEND|O_CREAT)
+    mov rax, 2
+    mov rsi, 02101o     ; Flags
+    mov rdx, 0644o      ; Mode
+    syscall
+    
+    mov rdi, rax        ; fd
+    mov rax, 1          ; sys_write
+    mov rsi, msg
+    mov rdx, len_m
+    syscall
+    
+    mov rax, 3          ; sys_close
+    syscall
+    ret
