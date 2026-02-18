@@ -1,0 +1,45 @@
+name: Robo-Knight Portal open
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches: [main]
+
+jobs:
+  test-system:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      # 1️⃣ Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Install basic Linux utilities
+      - name: Install Core Utilities
+        run: sudo apt-get update && sudo apt-get install -y unzip curl jq
+
+      # 3️⃣ Verify repo structure
+      - name: List Repo Files
+        run: ls -R
+
+      # 4️⃣ Read sitemap.xml if it exists
+      - name: Read sitemap.xml
+        run: |
+          if [ -f "sitemap.xml" ]; then
+            echo "===== SITEMAP.XML FOUND ====="
+            cat sitemap.xml
+          else
+            echo "===== SITEMAP.XML NOT FOUND ====="
+          fi
+
+      # 5️⃣ Optional: Test XML parsing with xmllint
+      - name: Validate XML
+        run: |
+          sudo apt-get install -y libxml2-utils
+          if [ -f "sitemap.xml" ]; then
+            xmllint --noout sitemap.xml && echo "XML valid ✅" || echo "XML invalid ❌"
+          fi
