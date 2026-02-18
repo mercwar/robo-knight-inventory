@@ -26,12 +26,33 @@ jobs:
             nasm binutils gcc git jq python3 python3-pip --no-install-recommends
           python3 -m pip install torch tensorflow opencv-python --break-system-packages --no-cache-dir
 
-      - name: Compile and Run Master Dispatcher
+      - name: Build and Dispatch Master Suite
         run: |
-          echo "[$(date)] JOB: Compiling Master Suite" >> fire-portal.log
-          # Pre-compile the external tools
-          nasm -f elf64 fire-log.asm -o fire-log.o && ld fire-log.o -o fire-log_bin
-          nasm -f elf64 fire-end.asm -o fire-end.o && ld fire-end.o -o fire-end_bin
-          # Compile and execute the Brain
-          nasm -f elf64 fire-gem.asm -o fire-gem.o && ld fire-gem.o -o fire-gem_bin
+          echo "[$(date)] JOB: Global Authorization Pulse" >> fire-portal.log
+          
+          # 1. Authorize the entire CJS and ASM source tree immediately
+          chmod -R 755 .
+          chmod 755 cjs/*.json
+
+          echo "[$(date)] JOB: Compiling Binaries with Explicit Permissions" >> fire-portal.log
+          
+          # 2. Compile and Authorize Logger
+          nasm -f elf64 fire-log.asm -o fire-log.o
+          chmod 755 fire-log.o
+          ld fire-log.o -o fire-log_bin
+          chmod 755 fire-log_bin
+
+          # 3. Compile and Authorize Finalizer
+          nasm -f elf64 fire-end.asm -o fire-end.o
+          chmod 755 fire-end.o
+          ld fire-end.o -o fire-end_bin
+          chmod 755 fire-end_bin
+
+          # 4. Compile and Authorize Master Brain
+          nasm -f elf64 fire-gem.asm -o fire-gem.o
+          chmod 755 fire-gem.o
+          ld fire-gem.o -o fire-gem_bin
+          chmod 755 fire-gem_bin
+
+          echo "[$(date)] JOB: All Binaries Authorized. Launching Gem." >> fire-portal.log
           ./fire-gem_bin >> fire-portal.log 2>&1
