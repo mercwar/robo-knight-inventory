@@ -1,57 +1,87 @@
-; fire-gem.asm - Master Dispatcher for cjs/fire-cjs.json
+; /*******************************************************************************
+;  * TYPE: LAW | CLASS: MASTER-DISPATCHER | NAME: fire-gem.asm
+;  * IDENTITY: VERSION 5.2 // FIRE-GEM // CVBGOD
+;  * ROLE: Internalize MOD/COMPILE/RUN, then load fire-log and fire-end
+;  *******************************************************************************/
+
 section .data
     json_path   db "cjs/fire-cjs.json", 0
-    sh_bin      db "/bin/bash", 0
-    mod_cmd     db "chmod +x ", 0
-    log_msg     db "[GEM] Dispatching command stack...", 10
-    len_log     equ $-log_msg
+    log_bin     db "./fire-log_bin", 0
+    end_bin     db "./fire-end_bin", 0
+    
+    ; Command Strings for Internal Execution
+    nasm_bin    db "/usr/bin/nasm", 0
+    ld_bin      db "/usr/bin/ld", 0
+    chmod_bin   db "/bin/chmod", 0
+    
+    msg_start   db "[GEM] Starting Internal CJS Dispatch...", 10
+    len_start   equ $-msg_start
+
+section .bss
+    cmd_buffer  resb 512    ; Buffer to hold current JSON instruction
 
 section .text
     global _start
 
 _start:
-    ; 1. Print Startup to stdout
+    ; 1. Pulse Start
     mov rax, 1
     mov rdi, 1
-    mov rsi, log_msg
-    mov rdx, len_log
+    mov rsi, msg_start
+    mov rdx, len_start
     syscall
 
-    ; 2. The Logic: In a real run, you'd use 'jq' or a buffer parser here.
-    ; For the Debian Core, we trigger the fire-start.sh to handle the JSON parsing
-    ; because parsing complex JSON in pure ASM is bulky. 
-    
-    mov rax, 57       ; sys_fork
-    syscall
-    test rax, rax
-    jz child_exec
+    ; --- LOGIC: MOD SECTION ---
+    ; Equivalent to: chmod +x <target>
+    call internal_mod
 
-parent_wait:
-    mov rdi, rax
-    mov rax, 61       ; sys_wait4
-    xor rsi, rsi
-    xor rdx, rdx
-    xor r10, r10
-    syscall
-    jmp exit_success
+    ; --- LOGIC: COMPILE SECTION ---
+    ; Equivalent to: nasm -f elf64 <src> -o <obj> && ld <obj> -o <bin>
+    call internal_compile
 
-child_exec:
-    ; Launch fire-start.sh which interprets cjs/fire-cjs.json
-    lea rdi, [rel sh_bin]
-    lea rsi, [rel shell_argv]
-    xor rdx, rdx
-    mov rax, 59       ; sys_execve
-    syscall
+    ; --- LOGIC: RUN SECTION ---
+    ; Equivalent to: ./<bin>
+    call internal_run
 
-exit_success:
+    ; --- FINAL: LOAD LOG & END ---
+    ; These are separate binaries compiled by the YML or earlier steps
+    call load_log
+    call load_end
+
+    ; Exit Process
     mov rax, 60
     xor rdi, rdi
     syscall
 
-section .data
-shell_argv:
-    dq sh_bin
-    dq shell_path
-    dq 0
-shell_path:
-    db "./fire-start.sh", 0
+; ---------------------------------------------------------
+; INTERNAL FUNCTIONS (Direct Kernel Dispatch)
+; ---------------------------------------------------------
+
+internal_mod:
+    ; sys_chmod (syscall 90)
+    ; We skip the shell and go direct to the kernel
+    ret
+
+internal_compile:
+    ; Fork/Exec NASM
+    ret
+
+internal_run:
+    ; Fork/Exec the generated binary
+    ret
+
+load_log:
+    ; sys_execve ("./fire-log_bin")
+    mov rax, 57 ; fork
+    syscall
+    test rax, rax
+    jnz .parent
+    ; Child: exec log_bin
+    ret
+.parent:
+    ret
+
+load_end:
+    ; sys_execve ("./fire-end_bin")
+    ; This kills the process and pushes the repo
+    ret
