@@ -1,4 +1,4 @@
-name: Auto Create and Push
+name: CVBGODS FIRE PORTAL
 on:
   push:
     branches: [ main ]
@@ -16,7 +16,7 @@ jobs:
 
       - name: Create Directory and File
         run: |
-          mkdir -p 
+          mkdir -p /
           echo "CVBGOD MADE THE DIRECTORY THIS TIME FOR YOU ROBOTS" >ROBOT.CVBGOD
 
       - name: Commit and Push Changes
