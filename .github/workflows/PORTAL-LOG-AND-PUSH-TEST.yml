@@ -1,4 +1,4 @@
-name: PORTAL-LOG-AND-PUSH-TEST
+name: PORTAL-LOG-AND-PUSH-FINAL
 
 on:
   workflow_dispatch: 
@@ -6,9 +6,11 @@ on:
 jobs:
   portal-test-job:
     runs-on: ubuntu-latest
-    container: debian:bookworm-slim
+    container: 
+      image: debian:bookworm-slim
+      options: --user root # FORCE ROOT to ensure write access
     permissions:
-      contents: write # Necessary for the push at the end
+      contents: write
 
     steps:
       # 1. Pull the Repository
@@ -17,25 +19,41 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 2. Setup Tooling
+      # 2. Fix Dubious Ownership
+      - name: Git Safe Directory
+        run: |
+          # Containers often trigger "dubious ownership" errors
+          git config --global --add safe.directory /github/workspace
+
+      # 3. Setup Tooling
       - name: Install Git
         run: apt-get update && apt-get install -y git --no-install-recommends
 
-      # 3. Log Logic
+      # 4. Forced Logging
       - name: Write Portal Log
         run: |
+          # Use absolute redirection and immediate verification
           echo "[$(date)] TEST_PULSE: Initializing Log Logic..." > fire-portal.log
           echo "[$(date)] TEST_PULSE: Writing to fire-portal.log" >> fire-portal.log
-          echo "[$(date)] TEST_PULSE: Environment Verified: Debian Bookworm." >> fire-portal.log
+          
+          # Verify the file was actually created
+          if [ -s fire-portal.log ]; then
+            echo "SUCCESS: fire-portal.log created."
+          else
+            echo "ERROR: File creation failed." && exit 1
+          fi
 
-      # 4. Push Logic (At the end of the file)
+      # 5. Final Push
       - name: Finalize and Push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          echo "[$(date)] TEST_PULSE: Handing off to Git Finalizer." >> fire-portal.log
-          
-          git add fire-portal.log
-          git commit -m "AVIS: Portal Test Pulse - Log and Push Complete"
-          git push origin main
+          # Only push if the log exists
+          if [ -f fire-portal.log ]; then
+            git add fire-portal.log
+            git commit -m "AVIS: Portal Test Pulse - Log and Push Complete"
+            git push origin main
+          else
+            echo "Nothing to push. Log file missing." && exit 1
+          fi
