@@ -1,57 +1,53 @@
-; fire-gem.asm - Internalizing MOD/COMPILE/RUN
+; fire-gem.asm - Master Dispatch Engine
 section .data
-    json_path   db "cjs/fire-cjs.json", 0
-    mod_msg     db "[GEM] Internal MOD: Setting Permissions...", 10
-    comp_msg    db "[GEM] Internal COMPILE: Assembling Target...", 10
-    run_msg     db "[GEM] Internal RUN: Executing Binary...", 10
     log_bin     db "./fire-log_bin", 0
     end_bin     db "./fire-end_bin", 0
+    msg_stub    db "[GEM] Internalizing MOD/COMPILE/RUN Stubs...", 10
+    len_stub    equ $-msg_stub
 
 section .text
     global _start
 
 _start:
-    ; 1. EXECUTE MOD PULSE
+    ; 1. Notify terminal of internal stub start
     mov rax, 1
     mov rdi, 1
-    mov rsi, mod_msg
-    mov rdx, 45
-    syscall
-    ; Internal logic: sys_chmod(target, 0755) would go here
-
-    ; 2. EXECUTE COMPILE PULSE
-    mov rax, 1
-    mov rsi, comp_msg
-    mov rdx, 48
-    syscall
-    ; Internal logic: sys_fork + sys_execve("/usr/bin/nasm")
-
-    ; 3. EXECUTE RUN PULSE
-    mov rax, 1
-    mov rsi, run_msg
-    mov rdx, 41
-    syscall
-    ; Internal logic: sys_fork + sys_execve(target_bin)
-
-    ; 4. TRANSITION TO EXIT STACK
-    call dispatch_exit
-    
-    mov rax, 60
-    xor rdi, rdi
+    mov rsi, msg_stub
+    mov rdx, len_stub
     syscall
 
-dispatch_exit:
-    ; Fork/Exec fire-log_bin
-    mov rax, 57
+    ; 2. INTERNAL STUB DISPATCH (Logic for MOD, COMPILE, RUN)
+    ; These are stubs for the internal kernel logic
+    call internal_stubs
+
+    ; 3. FORK & EXECUTE: fire-log_bin
+    mov rax, 57         ; sys_fork
     syscall
     test rax, rax
     jz .exec_log
-    ; Parent waits then executes fire-end_bin
-    ret
+    
+    ; Parent waits for log sync
+    mov rdi, rax
+    mov rax, 61         ; sys_wait4
+    xor rsi, rsi
+    xor rdx, rdx
+    xor r10, r10
+    syscall
+
+    ; 4. EXECUTE: fire-end_bin (Final hand-off)
+    mov rdi, end_bin
+    xor rsi, rsi
+    xor rdx, rdx
+    mov rax, 59         ; sys_execve
+    syscall
+
 .exec_log:
     mov rdi, log_bin
     xor rsi, rsi
     xor rdx, rdx
-    mov rax, 59
+    mov rax, 59         ; sys_execve
     syscall
+
+internal_stubs:
+    ; Placeholder for internalized MOD/RUN/COMPILE logic
     ret
