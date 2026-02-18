@@ -27,6 +27,9 @@ jobs:
       
       - name: CHMOD COMPILE AND RUN FIRE-GEM
         run: |
+          # Initialize nasm
+          echo "--- FIRE-GEM nasm LOG START ---" > fire-compile.log
+        
           # Setup environment
           sudo apt-get update && sudo apt-get install -y nasm
           
