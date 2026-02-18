@@ -2,116 +2,59 @@ name: FIRE-CYHY-MERC-G-PORTAL
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Fire-Gem AVIS Engine"]
-    types: [completed]
+  push:
+    branches: [main]
 
 jobs:
-  # 1️⃣ Checkout and Install Core Tools
-  setup:
+  portal-orchestration:
     runs-on: ubuntu-latest
-    outputs:
-      beacon-log: ${{ steps.beacon.outputs.file }}
+    container: debian:bookworm # Native Debian Environment
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout Repo
+      # 1️⃣ Pull Repo & Initialize Log Immediately
+      - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Initialize Portal Log
+        run: |
+          touch fire-portal.log
+          echo "[$(date)] SYSTEM: Repo Pulled. Debian Core Active." >> fire-portal.log
+
+      # 2️⃣ Install Core Debian & Kernel Development Packages
+      - name: Install System Dependencies
+        run: |
+          echo "[$(date)] JOB: Package Installation Started" >> fire-portal.log
+          apt-get update && apt-get install -y \
+            nasm gcc g++ binutils build-essential \
+            python3 python3-pip python3-torch \
+            php apache2 curl git jq \
+            linux-headers-amd64 # Core Debian Kernel Headers
+          
+          # Install AI Libraries via pip (Debian compliant)
+          python3 -m pip install --upgrade pip --break-system-packages
+          pip install tensorflow opencv-python --break-system-packages
+          echo "[$(date)] JOB: Dependencies Installed Successfully" >> fire-portal.log
+
+      # 3️⃣ Immediate NASM Compilation of fire-gem
+      - name: Compile and Run FIRE-GEM
+        run: |
+          echo "[$(date)] JOB: Compiling fire-gem.asm" >> fire-portal.log
+          chmod +x *.sh
+          
+          # Assemble and Link elf64
+          nasm -f elf64 fire-gem.asm -o fire-gem.o
+          ld fire-gem.o -o fire-gem_bin
+          
+          echo "[$(date)] JOB: Executing fire-gem_bin" >> fire-portal.log
+          ./fire-gem_bin >> fire-portal.log 2>&1
+          # fire-gem_bin executes internal logic, calling fire-end.asm to push.
+
+      # 4️⃣ Record and Stage Updates (Pushing handled by fire-end.asm)
+      - name: Archive Job Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          fetch-depth: 0
-
-      - name: Install Required Packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip gcc nasm python3 python3-pip php apache2
-
-      - name: Create Robot Beacon
-        id: beacon
-        run: |
-          BEACON_LOG="fire-gem-robot-beacon.log"
-          {
-            uname -a
-            gcc --version
-            nasm -v
-            python3 --version
-            php -v
-            apache2 -v
-            pip3 list
-          } > "$BEACON_LOG"
-
-          # Convert log to GUID JSON
-          python3 - << 'EOF'
-import hashlib, json, time
-log_file = "fire-gem-robot-beacon.log"
-robot_beacon = {}
-with open(log_file) as f:
-    for idx, line in enumerate(f):
-        guid = hashlib.md5(f"{line.strip()}-{time.time()}".encode()).hexdigest()
-        robot_beacon[guid] = line.strip()
-with open("robot-beacon.json", "w") as outf:
-    json.dump(robot_beacon, outf, indent=2)
-EOF
-          echo "::set-output name=file::$BEACON_LOG"
-
-  # 2️⃣ Fire-Portal: Parse Sitemap → JSON/INI
-  fire-portal:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Parse Sitemap
-        run: |
-          chmod +x fire-portal.sh
-          ./fire-portal.sh sh:fire-mod.sh
-
-  # 3️⃣ Fire-Mod Thread
-  fire-mod:
-    needs: fire-portal
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Run Fire-Mod
-        run: |
-          chmod +x fire-mod.sh
-          ./fire-mod.sh
-
-  # 4️⃣ Fire-Run Thread
-  fire-run:
-    needs: fire-mod
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Run Fire-Run
-        run: |
-          chmod +x fire-run.sh
-          ./fire-run.sh
-
-  # 5️⃣ Fire-Compile Thread
-  fire-compile:
-    needs: fire-run
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Run Fire-Compile
-        run: |
-          chmod +x fire-compile.sh
-          ./fire-compile.sh
-
-  # 6️⃣ Fire-End Thread
-  fire-end:
-    needs: fire-compile
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Run Fire-End
-        run: |
-          chmod +x fire-end.sh
-          ./fire-end.sh
+          name: portal-execution-logs
+          path: fire-portal.log
