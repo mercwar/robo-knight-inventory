@@ -1,49 +1,28 @@
-name: Deploy GitHub Pages
-
+name: Auto Create and Push
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch: # Allows manual trigger
+
+permissions:
+  contents: write # Required to push changes back to the repo
 
 jobs:
-  build:
-    # Set the appropriate runner, in this case, a Debian-based environment (ubuntu-latest)
+  build-and-push:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read # Allows checkout action to read the repo contents
-      pages: write # Allows the deployment action to write to the gh-pages branch
-      id-token: write # Required by the actions/deploy-pages action
-
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Example of a step to create and write content to a file
-      - name: Create index.html file
+      - name: Create Directory and File
         run: |
-          echo "<html><body><h1>Hello from GitHub Actions on Debian!</h1></body></html>" > index.html
-        shell: bash
+          mkdir -p my-new-directory
+          echo "This file was created automatically by GitHub Actions" > my-new-directory/hello-world.txt
 
-      # Optional: Use a specific action from the marketplace to manage file content
-      # - name: Write a file with a marketplace action
-      #   uses: DamianWu/write-file-action@v1
-      #   with:
-      #     path: 'my-config.yaml'
-      #     contents: |
-      #       key: value
-      #       list:
-      #         - item1
-      #         - item2
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload the directory containing your static files
-          path: './' # The root directory now contains index.html
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Automated: Created directory and file"
+          git push
