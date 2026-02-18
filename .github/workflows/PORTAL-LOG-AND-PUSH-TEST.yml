@@ -16,8 +16,8 @@ jobs:
 
       - name: Create Directory and File
         run: |
-          mkdir -p my-new-directory
-          echo "This file was created automatically by GitHub Actions" > my-new-directory/hello-world.txt
+          mkdir -p 
+          echo "CVBGOD MADE THE DIRECTORY THIS TIME FOR YOU ROBOTS" >ROBOT.CVBGOD
 
       - name: Commit and Push Changes
         run: |
