@@ -1,0 +1,10 @@
+{
+  "AVIS_LOG_CONFIG": {
+    "VERSION": "1.0",
+    "TARGETS": [
+      { "NAME": "PORTAL_LOG", "PATH": "fire-portal.log", "LEVEL": "CORE" },
+      { "NAME": "BEACON_LOG", "PATH": "avis-beacon.json", "LEVEL": "STATUS" },
+      { "NAME": "GEO_LOG", "PATH": "cjs/geo-audit.log", "LEVEL": "HARDCODED" }
+    ]
+  }
+}
