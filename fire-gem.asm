@@ -1,53 +1,40 @@
-; fire-gem.asm - Master Dispatch Engine
 section .data
-    log_bin     db "./fire-log_bin", 0
-    end_bin     db "./fire-end_bin", 0
-    msg_stub    db "[GEM] Internalizing MOD/COMPILE/RUN Stubs...", 10
-    len_stub    equ $-msg_stub
+    filename db "fire-asm.log", 0
+    message  db "FIRE-GEM PORTAL ENTRY: TEST 4 COMPLETE", 10
+    msglen   equ $ - message
 
 section .text
     global _start
 
 _start:
-    ; 1. Notify terminal of internal stub start
+    ; --- STEP 1: OPEN FILE ---
+    ; sys_open (rax=2), rdi=filename, rsi=flags, rdx=mode
+    mov rax, 2          
+    mov rdi, filename
+    ; O_WRONLY(1) | O_CREAT(64) | O_APPEND(1024) = 1089 (0x441)
+    mov rsi, 0x441      
+    mov rdx, 0644o       ; File permissions (rw-r--r--)
+    syscall
+
+    ; Save file descriptor returned in RAX
+    push rax
+    mov rdi, rax         ; Use fd for next call
+
+    ; --- STEP 2: WRITE TO FILE ---
+    ; sys_write (rax=1), rdi=fd, rsi=buffer, rdx=length
     mov rax, 1
-    mov rdi, 1
-    mov rsi, msg_stub
-    mov rdx, len_stub
+    mov rsi, message
+    mov rdx, msglen
     syscall
 
-    ; 2. INTERNAL STUB DISPATCH (Logic for MOD, COMPILE, RUN)
-    ; These are stubs for the internal kernel logic
-    call internal_stubs
-
-    ; 3. FORK & EXECUTE: fire-log_bin
-    mov rax, 57         ; sys_fork
-    syscall
-    test rax, rax
-    jz .exec_log
-    
-    ; Parent waits for log sync
-    mov rdi, rax
-    mov rax, 61         ; sys_wait4
-    xor rsi, rsi
-    xor rdx, rdx
-    xor r10, r10
+    ; --- STEP 3: CLOSE FILE ---
+    ; sys_close (rax=3), rdi=fd
+    mov rax, 3
+    pop rdi              ; Retrieve fd from stack
     syscall
 
-    ; 4. EXECUTE: fire-end_bin (Final hand-off)
-    mov rdi, end_bin
-    xor rsi, rsi
-    xor rdx, rdx
-    mov rax, 59         ; sys_execve
+    ; --- STEP 4: EXIT ---
+    ; sys_exit (rax=60), rdi=status
+    mov rax, 60
+    xor rdi, rdi
     syscall
-
-.exec_log:
-    mov rdi, log_bin
-    xor rsi, rsi
-    xor rdx, rdx
-    mov rax, 59         ; sys_execve
-    syscall
-
-internal_stubs:
-    ; Placeholder for internalized MOD/RUN/COMPILE logic
-    ret
