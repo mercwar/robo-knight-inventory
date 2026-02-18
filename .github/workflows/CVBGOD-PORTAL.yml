@@ -14,42 +14,43 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Create Directory and File
+      - name: Create ROBOT.CVBGOD
         run: |
-          CURRENT_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          echo "CVBGOD PORTAL ENTRY FOR ROBOTS: $CURRENT_TIME" > ROBOT.CVBGOD
+          # ROBOT.CVBGOD referring to CVBGOD.AVIS
+          echo "CVBGOD PORTAL ENTRY: REFERENCING AVIS SYSTEM AT CVBGOD.AVIS | TIME: $(date)" > ROBOT.CVBGOD
 
-      - name: AI Read and Generate Third Test
+      - name: AI Read and Generate CVBGOD.AVIS
         run: |
           cat ROBOT.CVBGOD
-          CURRENT_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          echo "CVBGOD PORTAL ENTRY FOR AVIS TIME IS: $CURRENT_TIME" > CVBGOD.AVIS
+          # CVBGOD.AVIS referring to fire-compile.log
+          echo "CVBGOD PORTAL ENTRY: AVIS SYSTEM REFERENCING COMPILATION LOG AT fire-compile.log | TIME: $(date)" > CVBGOD.AVIS
       
       - name: CHMOD COMPILE AND RUN FIRE-GEM
         run: |
-          # Install NASM
+          # Setup environment
           sudo apt-get update && sudo apt-get install -y nasm
           
-          echo "--- COMPILATION LOG START ---" > compile.log
+          # Initialize the specific log file you requested
+          echo "--- FIRE-GEM COMPILATION LOG START ---" > fire-compile.log
           
-          # Assemble and Link with logging
-          echo "[LOG] Assembling fire-gem.asm..." >> compile.log
-          nasm -f elf64 fire-gem.asm -o fire-gem.o 2>> compile.log
+          # Assemble, Link, and Run fire-gem.asm
+          echo "[ACTION] Assembling fire-gem.asm..." >> fire-compile.log
+          nasm -f elf64 fire-gem.asm -o fire-gem.o 2>> fire-compile.log
           
-          echo "[LOG] Linking fire-gem..." >> compile.log
-          ld fire-gem.o -o fire-gem 2>> compile.log
+          echo "[ACTION] Linking fire-gem.o..." >> fire-compile.log
+          ld fire-gem.o -o fire-gem 2>> fire-compile.log
           
-          echo "[LOG] Executing FIRE-GEM..." >> compile.log
+          echo "[ACTION] Setting Permissions and Running..." >> fire-compile.log
           chmod +x fire-gem
-          ./fire-gem >> compile.log 2>&1
+          ./fire-gem >> fire-compile.log 2>&1
           
-          # Output log to console for immediate robot feedback
-          cat compile.log
+          # Output final log to console for verification
+          cat fire-compile.log
 
       - name: SAVE CODESPACE TO DISK
         run: | 
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Automated: CVBGOD portal sequence & compile logs"
+          git commit -m "Automated: Portal chain linked to fire-compile.log"
           git push
