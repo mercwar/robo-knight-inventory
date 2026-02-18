@@ -1,0 +1,12 @@
+{
+  "AVIS_CJS_OBJECT": {
+    "VERSION": "5.1",
+    "COMMAND_REGISTRY": [
+      { "ID": "STEP_01", "CODE": "MOD", "TARGET": "fire-term.asm" },
+      { "ID": "STEP_02", "CODE": "COMPILE", "SOURCE": "fire-term.asm", "OUT": "fire-term_bin" },
+      { "ID": "STEP_03", "CODE": "RUN", "CMD": "./fire-term_bin" },
+      { "ID": "STEP_04", "CODE": "LOG", "ACTION": "UPDATE_BEACON" },
+      { "ID": "STEP_05", "CODE": "END", "ACTION": "PUSH_REPO" }
+    ]
+  }
+}
