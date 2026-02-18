@@ -1,4 +1,4 @@
-name: PORTAL-FULL-SYNC-TEST
+name: PORTAL-FULL-SYNC-FIXED
 
 on:
   workflow_dispatch:
@@ -8,50 +8,48 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: debian:bookworm-slim
-      options: --user root # Ensures we can write to the workspace
+      options: --user root
     permissions:
       contents: write
 
     steps:
-      # 1️⃣ Pull the whole repo (fetch-depth: 0 ensures full history)
-      - name: Pull Full Repository
+      # 1. Pull the repo (fetch-depth: 0 ensures full history)
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2️⃣ Install Tools immediately
+      # 2. Install Git inside the container
       - name: Install Git
         run: |
           apt-get update
           apt-get install -y git --no-install-recommends
 
-      # 3️⃣ Configure Environment
-      - name: Set Safe Directory
+      # 3. CRITICAL: Trust the workspace path inside the container
+      - name: Trust Workspace
         run: git config --global --add safe.directory /github/workspace
 
-      # 4️⃣ Write the Log File
+      # 4. Generate Log (Pull -> Write)
       - name: Write Portal Log
         run: |
-          echo "[$(date)] SYSTEM: Full Sync Initiated." > fire-portal.log
-          echo "[$(date)] SYSTEM: Debian Core Active." >> fire-portal.log
-          echo "[$(date)] JOB: Captured Full Repository State." >> fire-portal.log
-          
-          # Verification pulse
-          ls -R >> fire-portal.log
+          cd /github/workspace
+          echo "[$(date)] SYSTEM: Full Sync Started." > fire-portal.log
+          echo "Current Path: $(pwd)" >> fire-portal.log
+          ls -la >> fire-portal.log # Pulse check for files
 
-      # 5️⃣ Push the whole repo at the end of the file
-      - name: Finalize and Push Whole Repo
+      # 5. Final Push (Write -> Push)
+      - name: Finalize and Push
         run: |
+          cd /github/workspace
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Add EVERYTHING (.) to the push
+          # Force the whole repo sync
           git add .
           
-          # Only commit and push if there are changes
           if ! git diff --staged --quiet; then
             git commit -m "AVIS: Full Portal Sync - $(date)"
             git push origin main
           else
-            echo "No changes detected to push."
+            echo "No changes to push."
           fi
