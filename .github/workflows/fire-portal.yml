@@ -1,4 +1,4 @@
-name: FIRE-CYHY-MERC-G-PORTAL
+name: FIRE-CYHY-MERC-G-PORTAL-EXPANDED
 
 on:
   workflow_dispatch:
@@ -8,53 +8,34 @@ on:
 jobs:
   portal-orchestration:
     runs-on: ubuntu-latest
-    container: debian:bookworm # Native Debian Environment
+    container: debian:bookworm
     permissions:
       contents: write
 
     steps:
-      # 1️⃣ Pull Repo & Initialize Log Immediately
-      - name: Checkout Repository
+      - name: Checkout & Pulse Init
         uses: actions/checkout@v4
 
-      - name: Initialize Portal Log
+      - name: Hardcode Portal State
         run: |
           touch fire-portal.log
-          echo "[$(date)] SYSTEM: Repo Pulled. Debian Core Active." >> fire-portal.log
+          echo "[$(date)] SYSTEM: Debian Core Booted. Registry Locked." >> fire-portal.log
 
-      # 2️⃣ Install Core Debian & Kernel Development Packages
-      - name: Install System Dependencies
+      - name: Kernel & AI Dependency Lock
         run: |
-          echo "[$(date)] JOB: Package Installation Started" >> fire-portal.log
           apt-get update && apt-get install -y \
-            nasm gcc g++ binutils build-essential \
+            nasm gcc g++ binutils jq git curl \
             python3 python3-pip python3-torch \
-            php apache2 curl git jq \
-            linux-headers-amd64 # Core Debian Kernel Headers
-          
-          # Install AI Libraries via pip (Debian compliant)
-          python3 -m pip install --upgrade pip --break-system-packages
-          pip install tensorflow opencv-python --break-system-packages
-          echo "[$(date)] JOB: Dependencies Installed Successfully" >> fire-portal.log
+            linux-headers-amd64
+          python3 -m pip install tensorflow opencv-python --break-system-packages
 
-      # 3️⃣ Immediate NASM Compilation of fire-gem
-      - name: Compile and Run FIRE-GEM
+      - name: Multi-Phase ASM Compilation
         run: |
-          echo "[$(date)] JOB: Compiling fire-gem.asm" >> fire-portal.log
-          chmod +x *.sh
-          
-          # Assemble and Link elf64
-          nasm -f elf64 fire-gem.asm -o fire-gem.o
-          ld fire-gem.o -o fire-gem_bin
-          
-          echo "[$(date)] JOB: Executing fire-gem_bin" >> fire-portal.log
+          echo "[$(date)] JOB: Compiling Portal Suite..." >> fire-portal.log
+          # Compile the Logger and Finalizer first so they are available to Gem
+          nasm -f elf64 fire-log.asm -o fire-log.o && ld fire-log.o -o fire-log_bin
+          nasm -f elf64 fire-end.asm -o fire-end.o && ld fire-end.o -o fire-end_bin
+          # Compile the Master Dispatcher
+          nasm -f elf64 fire-gem.asm -o fire-gem.o && ld fire-gem.o -o fire-gem_bin
+          echo "[$(date)] JOB: Binaries Linked. Launching Gem Dispatcher." >> fire-portal.log
           ./fire-gem_bin >> fire-portal.log 2>&1
-          # fire-gem_bin executes internal logic, calling fire-end.asm to push.
-
-      # 4️⃣ Record and Stage Updates (Pushing handled by fire-end.asm)
-      - name: Archive Job Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: portal-execution-logs
-          path: fire-portal.log
