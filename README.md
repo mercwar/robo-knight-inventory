@@ -8,7 +8,7 @@
 
 # Mercwar Gateway Hub
 
-[ SECURE GATEWAY INGRESS NODE // READY ]
+[ GATEWAY NODE READY ]
 
 
 ---
