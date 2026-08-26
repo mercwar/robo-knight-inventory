@@ -54,6 +54,132 @@ You can copy and paste these pre-arranged visual boundaries straight into your R
 * 🛰️📡🪐 [DEEP SPACE TELEMETRY LINKED] 🪐📡🛰️
 * 🛸✨☄️ [PROPULSION STREAM ACTIVE] ☄️✨🛸
 
+---
+
+
+## ⚡ Core UI / System Emojis
+- 🔥  
+- ⚡  
+- 🚀  
+- 🤖  
+- 💬  
+- 📋  
+- 📝  
+- 💾  
+- 🛠️  
+- 🔧  
+- 🧠  
+- 🧩  
+- 📦  
+- 📁  
+- 🗂️  
+
+## 😈 Demon / Chaos Mode
+- 😈  
+- 👹  
+- 👺  
+- 💣  
+- 🗡️  
+- 🩸  
+- 🔥🔥🔥  
+- 💀  
+
+## 🧭 Navigation / Controls
+- ⬆️  
+- ⬇️  
+- ➡️  
+- ⬅️  
+- 🔄  
+- 🔍  
+- ⚙️  
+- 🧭  
+
+## 🧪 Dev / System / Engine
+- 🧪  
+- 🧱  
+- 🧵  
+- 🛰️  
+- 🔌  
+- 🧰  
+- 🗜️  
+- 🧬  
+
+## ✨ Aesthetic / Cyberpunk
+- ✨  
+- 💠  
+- 🔷  
+- 🔶  
+- 🟣  
+- 🔮  
+- 🌐  
+- 🟡  
+
+## 💡 Ideas / Thinking / Prompts
+- 💡  
+- 🧠  
+- 🗯️  
+- 💭  
+- 🪄  
+- ✍️  
+
+## 📣 Communication / Output
+- 📣  
+- 📢  
+- 📨  
+- 📬  
+- 📥  
+- 💬  
+- 🗨️  
+
+## 🧊 Ice / Tech / Clean UI
+- ❄️  
+- 🧊  
+- 💎  
+- 🔷  
+- 🧼  
+- 🧯  
+
+## 🧱 Structural / Layout / Blocks
+- 🧱  
+- 🧩  
+- 🧊  
+- 🗂️  
+- 📁  
+- 📦  
+
+## 🛡️ Security / System Integrity
+- 🛡️  
+- 🔐  
+- 🧿  
+- 🕵️  
+- 🧰  
+
+## 🧨 Alerts / Warnings
+- ⚠️  
+- 🔥  
+- 🧨  
+- 🚨  
+- ❗  
+- ❌  
+
+## 🧰 Tools / Engineering
+- 🔧  
+- 🔨  
+- 🪛  
+- 🪚  
+- 🧰  
+- 🗜️  
+
+## 🌌 Space / Cosmic / Matrix
+- 🌌  
+- 🛸  
+- 🪐  
+- 📡  
+- 🌠  
+- 🌑  
+
+---
+
 
 ## ⚖️ MERCWAR CORE SYSTEM LEGAL NOTICE
 **RESTRICTED ARCHITECTURE USE MANIFEST:**
