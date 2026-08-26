@@ -21,6 +21,40 @@ These structured glyph arrays function as unique environmental identifiers and h
 ### 🌌 Dimensional, Weather & Spatial Coordinates
 `🌀` `🌫️` `🌪️` `🌊` `🌙` `☄️` `⚡` `🔥` `💥` `🕳️` `🕸️` `🔮`
 
+
+## 🌌 Deep-Space Phenomena & Anomalies
+
+* 🌌 Milky Way / Galaxy Core
+* 🕳️ Black Hole / Gravitational Singularity
+* 🌀 Cosmic Nebula / Vortex
+* ☄️ Comet / Kinetic Impact Vector
+* ⭐ Shooting Star / Quantum Flash
+
+## 🪐 Celestial Bodies & Matrices
+
+* 🪐 Ringed Planet / Orbital Coordinates
+* 🌙 Crescent Moon / Dark Side Phase
+* 🌑 New Moon / Total Eclipse Window
+* ☀️ Solar Flare / Corona Core
+* 🌍 Planetary Grid / Earth Node
+
+## 🛸 Interstellar & Telemetry Elements
+
+* 🛸 Unidentified Craft / Master Vessel
+* 🚀 Launch Vector / Propulsion Stream
+* 📡 Deep-Space Uplink / Array Receiver
+* ✨ Cosmic Radiation / Spark Matrix
+* 🔮 Celestial Core / Chrono-Sphere
+
+------------------------------
+## 🛰️ Pre-Formatted Cosmic Layout Combos
+You can copy and paste these pre-arranged visual boundaries straight into your README.md file:
+
+* 🌌🕳️🌀 [CORE SINGULARITY STABLE] 🌀🕳️🌌
+* 🛰️📡🪐 [DEEP SPACE TELEMETRY LINKED] 🪐📡🛰️
+* 🛸✨☄️ [PROPULSION STREAM ACTIVE] ☄️✨🛸
+
+
 ## ⚖️ MERCWAR CORE SYSTEM LEGAL NOTICE
 **RESTRICTED ARCHITECTURE USE MANIFEST:**
 1. All core matrix logic, dynamic functional layout streams, and 8-bit variable-width pointer configurations contained within this repository are the proprietary architectural definitions of MercWar.
