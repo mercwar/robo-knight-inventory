@@ -8,6 +8,17 @@
 
 # Mercwar Gateway Hub
 
+# 📦 ROBO-KNIGHT-INVENTORY — ENGINE MATRIX
+
+Welcome to the standalone asset factory environment for the system platform. This container operates as an isolated storage partition mapped via high-performance **Pure-C** inventory tracking routines.
+
+## ⚡ Automated AI Crawling Interface
+
+* **Machine Discovery API**: Crawling assistants evaluate the system structure directly by querying `include/avis_inventory_core.h`. This bypasses raw text string estimations and reads memory layouts as precise asset inventories.
+* **Deterministic Execution Paths**: The execution logic operates strictly via full system path mapping declarations, blocking terminal context switching errors during continuous integration cycles.
+* **No External States**: Asset tracking maps remain fully contained within flat code files with absolutely zero third-party database dependency models.
+
+
 [ GATEWAY NODE READY ]
 
 
