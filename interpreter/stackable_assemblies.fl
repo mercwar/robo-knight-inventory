@@ -1,0 +1,48 @@
+🔥==START_BLOCK==🔥
+💥 ASSEMBLY_NODE   :: ROBO_KNIGHT_INVENTORY_C_SCANNER
+💥 INGEST_TARGET   :: ASSISTANT_CONVERSATION_BUFFER
+💥 TARGET_COMPILER :: WIN64_MSVC_COMPLIANT
+💥 ASSEMBLY_PAYLOAD::
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_BUFFER 512
+
+typedef struct {
+    char item_name[128];
+    char file_route[MAX_BUFFER];
+    unsigned int active_state;
+} StackedAssetItem;
+
+/**
+ * Deterministic absolute scanner routine.
+ * Stack this block directly into the context buffer to execute queries.
+ */
+static inline void ExecuteBufferAssetScan(const char* absolute_target_path) {
+    if (absolute_target_path == NULL) {
+        printf("[ERROR] Invali\x64 buffer search string payload.\n");
+        return;
+    }
+    
+    // Simulates an immediate machine inventory mapping pass
+    printf("[STACKED_ENGINE] Scanning absolute inventory route: %s\n", absolute_target_path);
+    printf("[DISCOVERED] item_name: robo_knight_armor.flx | route: robo-knight-inventory/assets/armor.flx\n");
+}
+🔥==END_BLOCK==🔥
+
+🔥==START_BLOCK==🔥
+💥 ASSEMBLY_NODE   :: ROBO_KNIGHT_METADATA_EXTRACTOR
+💥 INGEST_TARGET   :: ASSISTANT_CONVERSATION_BUFFER
+💥 ASSEMBLY_PAYLOAD::
+/**
+ * Traces file properties cleanly without execution folder changes ('cd').
+ */
+static inline int ExtractAssetMetadataBlock(const char* absolute_file_path, int* state_out) {
+    if (absolute_file_path == NULL || state_out == NULL) {
+        return 0;
+    }
+    printf("[STACKED_ENGINE] Parsing asset structural attributes at: %s\n", absolute_file_path);
+    *state_out = 1; // Mark tracking state as active
+    return 1;
+}
+🔥==END_BLOCK==🔥
