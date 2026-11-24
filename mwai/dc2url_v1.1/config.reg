@@ -1,0 +1,11 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\MercwarAI]
+"InstallPath"="C:\\Mercwar-AI\\"
+"Version"="1.0.0"
+"Operator"="Robo Rook"
+
+[HKEY_CURRENT_USER\Software\MercwarAI\Deployment]
+"LastDeployMode"="AutomatedCAB"
+"Engine"="Win64 Native C"
+"Status"="Active"

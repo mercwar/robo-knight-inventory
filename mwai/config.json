@@ -1,0 +1,34 @@
+{
+  "PackageVersion": "1.0.0",
+  "Author": "Mercwar AI Systems",
+  "DeploymentNodes": [
+    {
+      "NodeID": "Node_CoreBinaries",
+      "AssociatedRegistry": "import_core.reg",
+      "Files": [
+        {
+          "SourceFileName": "mwai.exe",
+          "TargetDirectory": "C:\\Mercwar-AI\\"
+        },
+        {
+          "SourceFileName": "unzipcab.dll",
+          "TargetDirectory": "C:\\Mercwar-AI\\"
+        },
+        {
+          "SourceFileName": "mwreg.dll",
+          "TargetDirectory": "C:\\Mercwar-AI\\"
+        }
+      ]
+    },
+    {
+      "NodeID": "Node_Extensions",
+      "AssociatedRegistry": "import_ext.reg",
+      "Files": [
+        {
+          "SourceFileName": "favi-con.ico",
+          "TargetDirectory": "C:\\Mercwar-AI\\assets\\"
+        }
+      ]
+    }
+  ]
+}
